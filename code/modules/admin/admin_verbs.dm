@@ -24,6 +24,9 @@ var/list/admin_verbs_admin = list(
 //	/datum/admins/proc/show_traitor_panel,	/*interface which shows a mob's mind*/ -Removed due to rare practical use. Moved to debug verbs ~Errorage
 	/datum/admins/proc/show_player_panel,	/*shows an interface for individual players, with various links (links require additional flags*/
 	/client/proc/game_panel,			/*game panel, allows to change game-mode etc*/
+	/client/proc/factioncontroller,
+//	/client/proc/edit_faction_membership,
+//	/client/proc/display_faction_membership,
 	/client/proc/check_ai_laws,			/*shows AI and borg laws*/
 	/datum/admins/proc/toggleooc,		/*toggles ooc on/off for everyone*/
 	/datum/admins/proc/toggleoocdead,	/*toggles ooc on/off for everyone who is dead*/
@@ -564,3 +567,970 @@ var/list/admin_verbs_hideable = list(
 	if(holder)
 		src.holder.output_ai_laws()
 
+/client/proc/factioncontroller()
+	set category = "Admin"
+	set name = "Faction Controller"
+	set desc = "Lets get this started."
+	var/thechooser = 0
+	var/editchoice															//start the var
+	editchoice = input("Select an action:","Faction Management") as null|anything in list(
+		"Edit UltraMarine Leader",
+		"Edit UltraMarines",
+
+		"Edit SalamanderMarine Leader",
+		"Edit Salamander Marines",
+
+		"Edit KriegOfficers",
+
+		"Edit Tauleader",
+		"Edit Tau",
+
+		"Edit Eldar Leader",
+		"Edit Eldar",
+
+		"Edit RavenGuard Leader",
+		"Edit RavenGuard",
+
+		"Edit Tyranid Leader",
+		"Edit Tyranids",
+
+		"Edit Ordo HereticusLeader",
+		"Edit Ordo Hereticus",
+
+		"Edit Ordo Hereticus Stormtroopers",
+
+		"Edit SOB Leader",
+		"Edit SOB",
+
+		"Edit Ork Leader",
+		"Edit Orks",
+
+		"Edit Plague Marine Leader",
+		"Edit Plague Marines",
+
+		"Edit Thousand Sons Leader",
+		"Edit Thousand Sons",
+
+		"Display all lists",
+		"Set RTD Timer",
+		"Enable/Disable RTD spawn",
+
+
+		"Cancel")
+	switch(editchoice)						//I have no idea what I'm doing.
+		if("Edit UltraMarine Leader")
+			thechooser = 1
+			edit_faction_membership(thechooser)
+		if("Edit UltraMarines")
+			thechooser = 2
+			edit_faction_membership(thechooser)
+		if("Edit SalamanderMarine Leader")
+			thechooser = 3
+			edit_faction_membership(thechooser)
+		if("Edit Salamander Marines")
+			thechooser = 4
+			edit_faction_membership(thechooser)
+		if("Edit KriegOfficers")
+			thechooser = 5
+			edit_faction_membership(thechooser)
+		if("Edit Tauleader")
+			thechooser = 6
+			edit_faction_membership(thechooser)
+		if("Edit Tau")
+			thechooser = 7
+			edit_faction_membership(thechooser)
+		if("Edit Eldar Leader")
+			thechooser = 8
+			edit_faction_membership(thechooser)
+		if("Edit Eldar")
+			thechooser = 9
+			edit_faction_membership(thechooser)
+		if("Edit RavenGuard Leader")
+			thechooser = 10
+			edit_faction_membership(thechooser)
+		if("Edit RavenGuard")
+			thechooser = 11
+			edit_faction_membership(thechooser)
+		if("Edit Tyranid Leader")
+			thechooser = 12
+			edit_faction_membership(thechooser)
+		if("Edit Tyranids")
+			thechooser = 13
+			edit_faction_membership(thechooser)
+		if("Edit Ordo HereticusLeader")												//not implemented
+			thechooser = 14
+			edit_faction_membership(thechooser)
+		if("Edit Ordo Hereticus")
+			thechooser = 15
+			edit_faction_membership(thechooser)
+		if("Edit Ordo Hereticus Stormtroopers")
+			thechooser = 16
+			edit_faction_membership(thechooser)
+		if("Edit SOB Leader")
+			thechooser = 17
+			edit_faction_membership(thechooser)
+		if("Edit SOB")
+			thechooser = 18
+			edit_faction_membership(thechooser)
+		if("Edit Ork Leader")
+			thechooser = 19
+			edit_faction_membership(thechooser)
+		if("Edit Orks")
+			thechooser = 20
+			edit_faction_membership(thechooser)
+		if("Edit Plague Marine Leader")
+			thechooser = 21
+			edit_faction_membership(thechooser)
+		if("Edit Plague Marines")
+			thechooser = 22
+			edit_faction_membership(thechooser)
+		if("Edit Thousand Sons Leader")
+			thechooser = 23
+			edit_faction_membership(thechooser)
+		if("Edit Thousand Sons")
+			thechooser = 24
+			edit_faction_membership(thechooser)
+		if("Display all lists")
+			display_faction_membership()
+		if ("Set RTD Timer")
+			set_rtd_timer()
+		if ("Enable/Disable RTD spawn")
+			enable_faction_spawn()
+
+
+/client/proc/edit_faction_membership(thechooser)
+	var/editchoice																		//start the var
+	editchoice = input("Select an action:","Faction Management") as null|anything in list("Add a Member","Remove a Member", "List members", "Cancel")	//surprise! var is input
+	switch(editchoice)
+		if("Add a Member")
+			var/newname = strip_html_simple(input("Enter the ckey of the new member:","Add a Member","") as text, 30) //No ckeys will be >30 chars... Right?
+			if(newname && trim(newname))
+				switch (thechooser)
+					if(1)
+						umleader.Add(newname)
+						var/savefile/umOVERSEER = new("data/rtd/umleader.sav")
+						umOVERSEER<<umleader
+						log_admin("[key_name(usr)] added [newname] to Ultramarine leaders.")
+						return
+					if(2)
+						umlist.Add(newname)										//umlist is a constant so lets toss that name in there
+						var/savefile/umMember = new("data/rtd/umMember.sav")				//lets drag this variable back from the dead
+						umMember<<umlist										//overwrite the save file with the list
+						log_admin("[key_name(usr)] added [newname] to Ultramarines.")
+						return
+					if(3)
+						smleader.Add(newname)
+						var/savefile/smOVERSEER = new("data/rtd/smleader.sav")
+						smOVERSEER<<smleader
+						log_admin("[key_name(usr)] added [newname] to Salamander leaders.")
+						return
+					if(4)
+						salamanders.Add(newname)
+						var/savefile/smMember = new("data/rtd/smMember.sav")
+						smMember<<salamanders
+						log_admin("[key_name(usr)] added [newname] to Salamanders.")
+						return
+					if(5)
+						kriegofficers.Add(newname)
+						var/savefile/krMember = new("data/rtd/krMember.sav")
+						krMember<<kriegofficers
+						log_admin("[key_name(usr)] added [newname] to Krieg officers.")
+						return
+					if(6)
+						tauleader.Add(newname)
+						var/savefile/tauOVERSEER = new("data/rtd/tauleader.sav")
+						tauOVERSEER<<tauleader
+						log_admin("[key_name(usr)] added [newname] to Tau leaders.")
+						return
+					if(7)
+						tau.Add(newname)
+						var/savefile/tauMember = new("data/rtd/tauMember.sav")
+						tauMember<<tau
+						log_admin("[key_name(usr)] added [newname] to Tau.")
+						return
+					if(8)
+						eldarleader.Add(newname)
+						var/savefile/eldarOVERSEER = new("data/rtd/eldarleader.sav")
+						eldarOVERSEER<<eldarleader
+						log_admin("[key_name(usr)] added [newname] to Eldar leaders.")
+						return
+					if(9)
+						eldar.Add(newname)
+						var/savefile/eldarMember = new("data/rtd/eldarMember.sav")
+						eldarMember<<eldar
+						log_admin("[key_name(usr)] added [newname] to Eldar.")
+						return
+					if(10)
+						ravenleader.Add(newname)
+						var/savefile/rgOVERSEER = new("data/rtd/rgleader.sav")
+						rgOVERSEER<<ravenleader
+						log_admin("[key_name(usr)] added [newname] to Ravenguard leaders.")
+						return
+					if(11)
+						ravenguard.Add(newname)
+						var/savefile/rgMember = new("data/rtd/rgMember.sav")
+						rgMember<<ravenguard
+						log_admin("[key_name(usr)] added [newname] to Ravenguard.")
+						return
+					if(12)
+						tyranidleader.Add(newname)
+						var/savefile/tyranidOVERSEER = new("data/rtd/tyranidleader.sav")
+						tyranidOVERSEER<<tyranidleader
+						log_admin("[key_name(usr)] added [newname] to Tyranid leaders.")
+						return
+					if(13)
+						tyranid.Add(newname)
+						var/savefile/tyranidMember = new("data/rtd/tyranidMember.sav")
+						tyranidMember<<tyranid
+						log_admin("[key_name(usr)] added [newname] to Tyranids.")
+						return
+					if(14)
+						ohleader.Add(newname)														//not implemented
+						var/savefile/ohOVERSEER = new("data/rtd/ohleader.sav")
+						ohOVERSEER<<ohleader
+						log_admin("[key_name(usr)] added [newname] to OH leaders.")
+						return
+					if(15)
+						ordohereticus.Add(newname)
+						var/savefile/ohMember = new("data/rtd/ohMember.sav")
+						ohMember<<ordohereticus
+						log_admin("[key_name(usr)] added [newname] to OH.")
+						return
+					if(16)
+						stormtrooper.Add(newname)
+						var/savefile/ohsMember = new("data/rtd/ohsMember.sav")
+						ohsMember<<stormtrooper
+						log_admin("[key_name(usr)] added [newname] to Stormtroopers.")
+						return
+					if(17)
+						sobleader.Add(newname)
+						var/savefile/sobOVERSEER = new("data/rtd/sobleader.sav")
+						sobOVERSEER<<sobleader
+						log_admin("[key_name(usr)] added [newname] to SOB leaders.")
+						return
+					if(18)
+						sob.Add(newname)
+						var/savefile/sobMember = new("data/rtd/sobMember.sav")
+						sobMember<<sob
+						log_admin("[key_name(usr)] added [newname] to SOB.")
+						return
+					if(19)
+						orkleader.Add(newname)
+						var/savefile/orkOVERSEER = new("data/rtd/orkleader.sav")
+						orkOVERSEER<<orkleader
+						log_admin("[key_name(usr)] added [newname] to Ork leaders.")
+						return
+					if(20)
+						ork.Add(newname)
+						var/savefile/orkMember = new("data/rtd/orkMember.sav")
+						orkMember<<ork
+						log_admin("[key_name(usr)] added [newname] to Orks.")
+						return
+					if(21)
+						pmleader.Add(newname)
+						var/savefile/pmOVERSEER = new("data/rtd/pmleader.sav")
+						pmOVERSEER<<pmleader
+						log_admin("[key_name(usr)] added [newname] to PM leaders.")
+						return
+					if(22)
+						pmlist.Add(newname)
+						var/savefile/pmMember = new("data/rtd/pmMember.sav")
+						pmMember<<pmlist
+						log_admin("[key_name(usr)] added [newname] to PM.")
+						return
+					if(23)
+						ksonsleader.Add(newname)
+						var/savefile/ksonsOVERSEER = new("data/rtd/ksonsleader.sav")
+						ksonsOVERSEER<<ksonsleader
+						log_admin("[key_name(usr)] added [newname] to Thousand Sons leaders.")
+						return
+					if(24)
+						ksons.Add(newname)
+						var/savefile/ksonsMember = new("data/rtd/ksonsMember.sav")
+						ksonsMember<<ksons
+						log_admin("[key_name(usr)] added [newname] to Thousand Sons.")
+						return
+
+		if("Remove a Member")
+			var/removal = strip_html_simple(input("Enter the ckey of the member to remove:","Remove a Member","") as text, 30)
+			if(removal && trim(removal))
+				switch (thechooser)
+					if(1)
+						umleader.Remove(removal)
+						var/savefile/umOVERSEER = new("data/rtd/umleader.sav")
+						umOVERSEER<<umleader
+						log_admin("[key_name(usr)] removed [removal] from Ultramarine leaders.")
+						return
+					if(2)
+						umlist.Remove(removal)
+						var/savefile/umMember = new("data/rtd/umMember.sav")
+						umMember<<umlist
+						log_admin("[key_name(usr)] removed [removal] from Ultramarines.")
+						return
+					if(3)
+						smleader.Remove(removal)
+						var/savefile/smOVERSEER = new("data/rtd/smleader.sav")
+						smOVERSEER<<smleader
+						log_admin("[key_name(usr)] removed [removal] from Salamander leaders.")
+						return
+					if(4)
+						salamanders.Remove(removal)
+						var/savefile/smMember = new("data/rtd/smMember.sav")
+						smMember<<salamanders
+						log_admin("[key_name(usr)] removed [removal] from Salamanders.")
+						return
+					if(5)
+						kriegofficers.Remove(removal)
+						var/savefile/krMember = new("data/rtd/krMember.sav")
+						krMember<<kriegofficers
+						log_admin("[key_name(usr)] removed [removal] from Krieg officers.")
+						return
+					if(6)
+						tauleader.Remove(removal)
+						var/savefile/tauOVERSEER = new("data/rtd/tauleader.sav")
+						tauOVERSEER<<tauleader
+						log_admin("[key_name(usr)] removed [removal] from Tau leaders.")
+						return
+					if(7)
+						tau.Remove(removal)
+						var/savefile/tauMember = new("data/rtd/tauMember.sav")
+						tauMember<<tau
+						log_admin("[key_name(usr)] removed [removal] from Tau.")
+						return
+					if(8)
+						eldarleader.Remove(removal)
+						var/savefile/eldarOVERSEER = new("data/rtd/eldarleader.sav")
+						eldarOVERSEER<<eldarleader
+						log_admin("[key_name(usr)] removed [removal] from Eldar leaders.")
+						return
+					if(9)
+						eldar.Remove(removal)
+						var/savefile/eldarMember = new("data/rtd/eldarMember.sav")
+						eldarMember<<eldar
+						log_admin("[key_name(usr)] removed [removal] from Eldar.")
+						return
+					if(10)
+						ravenleader.Remove(removal)
+						var/savefile/rgOVERSEER = new("data/rtd/rgleader.sav")
+						rgOVERSEER<<ravenleader
+						log_admin("[key_name(usr)] removed [removal] from Ravenguard leaders.")
+						return
+					if(11)
+						ravenguard.Remove(removal)
+						var/savefile/rgMember = new("data/rtd/rgMember.sav")
+						rgMember<<ravenguard
+						log_admin("[key_name(usr)] removed [removal] from Ravenguard.")
+						return
+					if(12)
+						tyranidleader.Remove(removal)
+						var/savefile/tyranidOVERSEER = new("data/rtd/tyranidleader.sav")
+						tyranidOVERSEER<<tyranidleader
+						log_admin("[key_name(usr)] removed [removal] from Tyranid leaders.")
+						return
+					if(13)
+						tyranid.Remove(removal)
+						var/savefile/tyranidMember = new("data/rtd/tyranidMember.sav")
+						tyranidMember<<tyranid
+						log_admin("[key_name(usr)] removed [removal] from Tyranids.")
+						return
+					if(14)
+						ohleader.Remove(removal)														//not implemented
+						var/savefile/ohOVERSEER = new("data/rtd/ohleader.sav")
+						ohOVERSEER<<ohleader
+						log_admin("[key_name(usr)] removed [removal] from OH leaders.")
+						return
+					if(15)
+						ordohereticus.Remove(removal)
+						var/savefile/ohMember = new("data/rtd/ohMember.sav")
+						ohMember<<ordohereticus
+						log_admin("[key_name(usr)] removed [removal] from OH.")
+						return
+					if(16)
+						stormtrooper.Remove(removal)
+						var/savefile/ohsMember = new("data/rtd/ohsMember.sav")
+						ohsMember<<stormtrooper
+						log_admin("[key_name(usr)] removed [removal] from Stormtroopers.")
+						return
+					if(17)
+						sobleader.Remove(removal)
+						var/savefile/sobOVERSEER = new("data/rtd/sobleader.sav")
+						sobOVERSEER<<sobleader
+						log_admin("[key_name(usr)] removed [removal] from SOB leaders.")
+						return
+					if(18)
+						sob.Remove(removal)
+						var/savefile/sobMember = new("data/rtd/sobMember.sav")
+						sobMember<<sob
+						log_admin("[key_name(usr)] removed [removal] from SOB.")
+						return
+					if(19)
+						orkleader.Remove(removal)
+						var/savefile/orkOVERSEER = new("data/rtd/orkleader.sav")
+						orkOVERSEER<<orkleader
+						log_admin("[key_name(usr)] removed [removal] from Ork leaders.")
+						return
+					if(20)
+						ork.Remove(removal)
+						var/savefile/orkMember = new("data/rtd/orkMember.sav")
+						orkMember<<ork
+						log_admin("[key_name(usr)] removed [removal] from Orks.")
+						return
+					if(21)
+						pmleader.Remove(removal)
+						var/savefile/pmOVERSEER = new("data/rtd/pmleader.sav")
+						pmOVERSEER<<pmleader
+						log_admin("[key_name(usr)] removed [removal] from PM leaders.")
+						return
+					if(22)
+						pmlist.Remove(removal)
+						var/savefile/pmMember = new("data/rtd/pmMember.sav")
+						pmMember<<pmlist
+						log_admin("[key_name(usr)] removed [removal] from PM.")
+						return
+					if(23)
+						ksonsleader.Remove(removal)
+						var/savefile/ksonsOVERSEER = new("data/rtd/ksonsleader.sav")
+						ksonsOVERSEER<<ksonsleader
+						log_admin("[key_name(usr)] removed [removal] from Thousand Sons leaders.")
+						return
+					if(24)
+						ksons.Remove(removal)
+						var/savefile/ksonsMember = new("data/rtd/ksons.sav")
+						ksonsMember<<ksons
+						log_admin("[key_name(usr)] removed [removal] from Thousand Sons.")
+						return
+
+		if("List members")
+			switch (thechooser)
+				if(1)
+					var/name = "Current Ultramarine Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in umleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(2)
+					var/name = "Current Ultramarines"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in umlist)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(3)
+					var/name = "Current Salamander Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in smleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(4)
+					var/name = "Current Salamanders"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in salamanders)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(5)
+					var/name = "Current Krieg Officers"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in kriegofficers)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(6)
+					var/name = "Current Tau Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in tauleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+
+				if(7)
+					var/name = "Current Tau"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in tau)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(8)
+					var/name = "Current Eldar Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in eldarleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(9)
+					var/name = "Current Eldar"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in eldar)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(10)
+					var/name = "Current RavenGuard Leader"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in ravenleader)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(11)
+					var/name = "Current Raven Guard"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in ravenguard)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(12)
+					var/name = "Current Tyranid Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in tyranidleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(13)
+					var/name = "Current Tyranids"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in tyranid)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(14)
+					var/name = "Ordo Hereticus Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in ohleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+
+				if(15)
+					var/name = "Current Ordo Hereticus"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in ordohereticus)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(16)
+					var/name = "Current OH Stormtroopers"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in stormtrooper)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(17)
+					var/name = "Current SOB Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in sobleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(18)
+					var/name = "Current SOB"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in sob)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(19)
+					var/name = "Current Ork Leader"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in orkleader)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(20)
+					var/name = "Current Orks"
+
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+
+					for(var/C in ork)
+						msg += "\t[C]"
+
+						msg += "<BR>"
+
+						msg += "\n"
+
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(21)
+					var/name = "Current Plague Marine Leader"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in pmleader)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(22)
+					var/name = "Current Plague Marines"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in pmlist)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(23)
+					var/name = "Current Thousand Sons Leader"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in ksonsleader)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+				if(24)
+					var/name = "Current Thousand Sons"
+					var/msg = "<b>Current Members: (MAKE SURE THESE CKEYS ARE EXACT!):</b>\n"
+					for(var/C in ksons)
+						msg += "\t[C]"
+						msg += "<BR>"
+						msg += "\n"
+					usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+
+		if("Cancel") return
+
+/client/proc/display_faction_membership()
+	var/name = "All Lists:"
+	var/msg = "<b>Factions:<BR></b>\n"
+	msg += "PlagueMarines:"
+	msg += "[pmlist]"
+	msg += "<BR>"
+	msg += "PlagueMarine leader:"
+	msg += "[pmleader]"
+	msg += "<BR>"
+	msg += "Orks:"
+	msg += "[ork]"
+	msg += "<BR>"
+	usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[msg]</BODY></HTML>", "window=[name]")
+
+/client/proc/set_rtd_timer()
+	var/newTimer = input ("How long into the round should an RTD be able to spawn in minutes?", "RTD Timer", config.RTDtime/600) as num|null
+	if(!newTimer || isnull(newTimer))	return //Hopefully means "banana" being entered won't change it
+	config.RTDtime = newTimer*600
+	log_admin("[key_name(usr)] set RTD Timer to [newTimer].")
+
+
+
+/client/proc/enable_faction_spawn() //Covers both Enabling and disabling. Maybe there could be a more efficient way to do this.
+	var/choice															//start the var
+	var/confirm
+	choice = input("Select option:","Faction Management") as null|anything in list(
+		"Enable/Disable all RTDs",
+		"Enable/Disable all Imperial RTDs",
+		"Enable/Disable all non-Imperial RTDs",
+		"Enable/Disable Ultramarines",
+		"Enable/Disable Salamanders",
+		"Enable/Disable Death Korps of Krieg",
+		"Enable/Disable Tau",
+		"Enable/Disable Eldar",
+		"Enable/Disable RavenGuard",
+		"Enable/Disable Tyranids",
+		"Enable/Disable Ordo Hereticus",
+		"Enable/Disable Sisters of Battle",
+		"Enable/Disable Orks",
+		"Enable/Disable Plague Marines",
+		"Enable/Disable Thousand Sons",
+		"Cancel")
+
+	confirm = input("Select option:","[choice]") as null|anything in list("Enable", "Disable", "Cancel")
+	switch(choice)						//I have no idea what I'm doing.
+		if ("Enable/Disable all RTDs")
+			switch (confirm)
+				if("Enable")
+					config.UMEnabled = 1  //Ultramarines
+					config.SAEnabled = 1  //Salamanders
+					config.DKEnabled = 1  //Death Korps
+					config.TAEnabled = 1  //Tau
+					config.ELEnabled = 1  //Eldar
+					config.RGEnabled = 1  //Ravenguard
+					config.TYEnabled = 1  //Tyranids
+					config.OHEnabled = 1  //Ordo Hereticus
+					config.SBEnabled = 1  //Sisters of Battle
+					config.OREnabled = 1  //Orks
+					config.PMEnabled = 1  //Plague Marines
+					config.KSEnabled = 1  //Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d all factions.")
+				if("Disable")
+					config.UMEnabled = 0  //Ultramarines
+					config.SAEnabled = 0  //Salamanders
+					config.DKEnabled = 0  //Death Korps
+					config.TAEnabled = 0  //Tau
+					config.ELEnabled = 0  //Eldar
+					config.RGEnabled = 0  //Ravenguard
+					config.TYEnabled = 0  //Tyranids
+					config.OHEnabled = 0  //Ordo Hereticus
+					config.SBEnabled = 0  //Sisters of Battle
+					config.OREnabled = 0  //Orks
+					config.PMEnabled = 0  //Plague Marines
+					config.KSEnabled = 0  //Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d all factions.")
+				if("Cancel")
+					return
+
+		if ("Enable/Disable all Imperial RTDs")
+			switch (confirm)
+				if("Enable")
+					config.UMEnabled = 1  //Ultramarines
+					config.SAEnabled = 1  //Salamanders
+					config.DKEnabled = 1  //Death Korps
+					config.RGEnabled = 1  //Ravenguard
+					config.OHEnabled = 1  //Ordo Hereticus
+					config.SBEnabled = 1  //Sisters of Battle
+					log_admin("[key_name(usr)] [confirm]d all Imperial factions.")
+				if("Disable")
+					config.UMEnabled = 0  //Ultramarines
+					config.SAEnabled = 0  //Salamanders
+					config.DKEnabled = 0  //Death Korps
+					config.RGEnabled = 0  //Ravenguard
+					config.OHEnabled = 0  //Ordo Hereticus
+					config.SBEnabled = 0  //Sisters of Battle
+					log_admin("[key_name(usr)] [confirm]d all Imperial factions.")
+				if("Cancel")
+					return
+		if("Enable/Disable all non-Imperial RTDs")
+			switch (confirm)
+				if("Enable")
+					config.TAEnabled = 1  //Tau
+					config.ELEnabled = 1  //Eldar
+					config.TYEnabled = 1  //Tyranids
+					config.OREnabled = 1  //Orks
+					config.PMEnabled = 1  //Plague Marines
+					config.KSEnabled = 1  //Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d all non-Imperial factions.")
+				if("Disable")
+					config.TAEnabled = 0  //Tau
+					config.ELEnabled = 0  //Eldar
+					config.TYEnabled = 0  //Tyranids
+					config.OREnabled = 0  //Orks
+					config.PMEnabled = 0  //Plague Marines
+					config.KSEnabled = 0  //Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d all non-Imperial factions.")
+				if("Cancel")
+					return
+		if("Enable/Disable Ultramarines")
+			switch (confirm)
+				if("Enable")
+					config.UMEnabled = 1  //Ultramarines
+					log_admin("[key_name(usr)] [confirm]d Ultramarines.")
+				if("Disable")
+					config.UMEnabled = 0  //Ultramarines
+					log_admin("[key_name(usr)] [confirm]d Ultramarines.")
+				if("Cancel")
+					return
+		if("Enable/Disable Salamanders")
+			switch (confirm)
+				if("Enable")
+					config.SAEnabled = 1  //Salamanders
+					log_admin("[key_name(usr)] [confirm]d Salamanders.")
+				if("Disable")
+					config.SAEnabled = 0  //Salamanders
+					log_admin("[key_name(usr)] [confirm]d Salamanders.")
+				if("Cancel")
+					return
+		if("Enable/Disable Death Korps of Krieg")
+			switch (confirm)
+				if("Enable")
+					config.DKEnabled = 1  //Death Korps
+					log_admin("[key_name(usr)] [confirm]d Death Korps of Krieg.")
+				if("Disable")
+					config.DKEnabled = 0  //Death Korps
+					log_admin("[key_name(usr)] [confirm]d Death Korps of Krieg.")
+				if("Cancel")
+					return
+		if("Enable/Disable Tau")
+			switch (confirm)
+				if("Enable")
+					config.TAEnabled = 1  //Tau
+					log_admin("[key_name(usr)] [confirm]d Tau.")
+				if("Disable")
+					config.TAEnabled = 0  //Tau
+					log_admin("[key_name(usr)] [confirm]d Tau.")
+				if("Cancel")
+					return
+		if("Enable/Disable Eldar")
+			switch (confirm)
+				if("Enable")
+					config.ELEnabled = 1  //Eldar
+					log_admin("[key_name(usr)] [confirm]d Eldar.")
+				if("Disable")
+					config.ELEnabled = 0  //Eldar
+					log_admin("[key_name(usr)] [confirm]d Eldar.")
+				if("Cancel")
+					return
+		if("Enable/Disable RavenGuard")
+			switch (confirm)
+				if("Enable")
+					config.RGEnabled = 1  //RavenGuard
+					log_admin("[key_name(usr)] [confirm]d Ravenguard.")
+				if("Disable")
+					config.RGEnabled = 0  //RavenGuard
+					log_admin("[key_name(usr)] [confirm]d Ravenguard.")
+				if("Cancel")
+					return
+		if("Enable/Disable Tyranids")
+			switch (confirm)
+				if("Enable")
+					config.TYEnabled = 1  //Tyranids
+					log_admin("[key_name(usr)] [confirm]d Tyranids.")
+				if("Disable")
+					config.TYEnabled = 0  //Tyranids
+					log_admin("[key_name(usr)] [confirm]d Tyranids.")
+				if("Cancel")
+					return
+		if("Enable/Disable Ordo Hereticus")
+			switch (confirm)
+				if("Enable")
+					config.OHEnabled = 1  // Ordo Hereticus
+					log_admin("[key_name(usr)] [confirm]d Ordo Hereticus.")
+				if("Disable")
+					config.OHEnabled = 0  // Ordo Hereticus
+					log_admin("[key_name(usr)] [confirm]d Ordo Hereticus.")
+				if("Cancel")
+					return
+		if("Enable/Disable Sisters of Battle")
+			switch (confirm)
+				if("Enable")
+					config.SBEnabled = 1  // Sisters of Battle
+					log_admin("[key_name(usr)] [confirm]d Sisters of Battle.")
+				if("Disable")
+					config.SBEnabled = 0  // Sisters of Battle
+					log_admin("[key_name(usr)] [confirm]d Sisters of Battle.")
+				if("Cancel")
+					return
+		if("Enable/Disable Orks")
+			switch (confirm)
+				if("Enable")
+					config.OREnabled = 1  // Orks
+					log_admin("[key_name(usr)] [confirm]d Orks.")
+				if("Disable")
+					config.OREnabled = 0  // Orks
+					log_admin("[key_name(usr)] [confirm]d Orks.")
+				if("Cancel")
+					return
+		if("Enable/Disable Plague Marines")
+			switch (confirm)
+				if("Enable")
+					config.PMEnabled = 1  // Plague Marines
+					log_admin("[key_name(usr)] [confirm]d Plague Marines.")
+				if("Disable")
+					config.PMEnabled = 0  // Plague Marines
+					log_admin("[key_name(usr)] [confirm]d Plague Marines.")
+				if("Cancel")
+					return
+		if("Enable/Disable Thousand Sons")
+			switch (confirm)
+				if("Enable")
+					config.KSEnabled = 1  // Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d Thousand Sons.")
+				if("Disable")
+					config.KSEnabled = 0  // Thousand Sons
+					log_admin("[key_name(usr)] [confirm]d Thousand Sons.")
+				if("Cancel")
+					return
+		if("Cancel")
+			return
+
+
+
+
+//remember admin log

@@ -235,6 +235,28 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	else if (response == "No")
 		src << "\blue Then stop bothering me."
 
+/mob/dead/observer/verb/lookforskitarii()
+	set category = "Ghost"
+	set name = "Try to be a Skitarii Ranger"
+	set desc= "Look for a Skitarii Ranger to become (warning, this could overwrite all other RTD for the round.)"
+	var/response = alert(src, "Would like to search for an empty Skitarii Ranger to possess?", "Skitarii Ranger request", "Yes", "No")
+
+	if(response == "Yes")
+		for(var/mob/living/carbon/human/skitarii_ranger/M in world)
+			if(M.isempty == 1)
+				if(M.health > 0)
+					src << "\blue Found one!"
+					src << "\red Your mind enters the body of a skilled Skitarii Ranger! You serve and are commanded by the Adeptus Mechanicus. Obey them and carry out their will."
+					M.key = usr.key
+					M.isempty = 0
+					break
+				src << "\blue [M] is dead."
+			else
+				src << "\blue [M] is occupied."
+		src << "\blue They are all occupied!!"
+	else if (response == "No")
+		src << "\blue Then stop bothering me."
+
 /mob/dead/observer/verb/lookfortyranid()
 	set category = "Ghost"
 	set name = "Try to be a Tyranid"
@@ -398,17 +420,17 @@ Update: What have we created? something awful -wel ard
 	set desc = "Allows a player who has been authorized to use a whitelisted role to respawn as that role."
 	if(!ticker || !ticker.mode)
 		usr << "\blue The game hasn't started yet!"
-		return 
+		return
 	if(!can_rtd)
 		usr << "\red <b>The fealty of your soul is commanded by [master]. You are not free to go.</b>"
 		return
 	if(ticker.mode.name == "necron")
 		usr << "\blue Reinforcements are cut off! OH MY GOD!!!"
 		return
-	if(world.time - round_start_time < config.shuttle_refuel_delay)
-		usr << "\blue The round has just begun! Please wait another [abs(round(((world.time - round_start_time) - config.shuttle_refuel_delay)/600))] minutes before trying again."
+	if(world.time - round_start_time < config.RTDtime)
+		usr << "\blue The round has just begun! Please wait another [abs(round(((world.time - round_start_time) - config.RTDtime)/600))] minutes before trying again."
 		return  //don't want a delay for testing
-		
+
 	if(inmenu)
 		usr << "\blue I didn't learn to code yesterday. First- close the menu you already have open."
 		return
@@ -427,61 +449,63 @@ Update: What have we created? something awful -wel ard
 		inmenu = 1
 		researchavailable()
 		return
-		
+
 
 /mob/dead/observer/proc/researchavailable()
 	var/RTDoptions = list("")
 	RTDoptions += availfaction
-	if (lowertext(usr.key) in salamanders)
+	if (!config.DKEnabled)
+		RTDoptions-="KRIEGER" //Take away krieger if DK is disable by admin
+	if (config.SAEnabled && lowertext(usr.key) in salamanders)
 		RTDoptions += "SALAMANDERS"								//SALAMANDERS
-	if (lowertext(usr.key) in umlist)
+	if (config.UMEnabled && lowertext(usr.key) in umlist)
 		RTDoptions += "ULTRAMARINES"							//ULTRAMARINES
-	if (lowertext(usr.key) in kriegofficers)
+	if (config.DKEnabled && lowertext(usr.key) in kriegofficers)
 		RTDoptions += "KRIEGOFFICERS"							//KRIEGOFFICERS
-	if (lowertext(usr.key) in tau)
+	if (config.TAEnabled && lowertext(usr.key) in tau)
 		RTDoptions += "TAU"										//TAU
-	if (lowertext(usr.key) in eldar)
+	if (config.ELEnabled && lowertext(usr.key) in eldar)
 		RTDoptions += "ELDAR"									//ELDAR
-	if (lowertext(usr.key) in ravenguard)
+	if (config.RGEnabled && lowertext(usr.key) in ravenguard)
 		RTDoptions += "RAVENGUARD"								//RAVENGUARD
-	if (lowertext(usr.key) in sob)
+	if (config.SBEnabled && lowertext(usr.key) in sob)
 		RTDoptions += "SOB"										//SOB
-	if (lowertext(usr.key) in ork)
+	if (config.OREnabled && lowertext(usr.key) in ork)
 		RTDoptions += "ORK"										//ORK
-	if (lowertext(usr.key) in pmlist)
+	if (config.PMEnabled && lowertext(usr.key) in pmlist)
 		RTDoptions += "PLAGUEMARINES"							//PLAGUEMARINES
-	if (lowertext(usr.key) in ksons)
+	if (config.KSEnabled && lowertext(usr.key) in ksons)
 		RTDoptions += "THOUSANDSONS"							//THOUSANDSONS
-	if (lowertext(usr.key) in ordohereticus)
+	if (config.OHEnabled && lowertext(usr.key) in ordohereticus)
 		RTDoptions += "ORDOHERETICUS"							//ORDOHERETICUS
-	if (lowertext(usr.key) in stormtrooper)
+	if (config.OHEnabled && lowertext(usr.key) in stormtrooper)
 		RTDoptions += "STORMTROOPERS"							//STORMTROOPERS
-	if (lowertext(usr.key) in tyranid)
+	if (config.TYEnabled && lowertext(usr.key) in tyranid)
 		RTDoptions += "TYRANIDS"								//TYRANIDS
 										//So called 'Leaders'
-	if (lowertext(usr.key) in umleader)
+	if (config.UMEnabled && lowertext(usr.key) in umleader)
 		RTDoptions += "UMLEADER"								//UMLEADER
-	if (lowertext(usr.key) in smleader)
+	if (config.SAEnabled && lowertext(usr.key) in smleader)
 		RTDoptions += "SMLEADER"								//SMLEADER
-	if (lowertext(usr.key) in tauleader)
+	if (config.TAEnabled && lowertext(usr.key) in tauleader)
 		RTDoptions += "TAULEADER"								//TAULEADER
-	if (lowertext(usr.key) in eldarleader)
+	if (config.ELEnabled && lowertext(usr.key) in eldarleader)
 		RTDoptions += "ELDARLEADER"								//ELDARLEADER
-	if (lowertext(usr.key) in ravenleader)
+	if (config.RGEnabled && lowertext(usr.key) in ravenleader)
 		RTDoptions += "RAVENLEADER"								//RAVENLEADER
-	if (lowertext(usr.key) in tyranidleader)
+	if (config.TYEnabled && lowertext(usr.key) in tyranidleader)
 		RTDoptions += "TYRANIDLEADER"							//TYRANIDLEADER
-	if (lowertext(usr.key) in sobleader)
+	if (config.SBEnabled && lowertext(usr.key) in sobleader)
 		RTDoptions += "SOBLEADER"								//SOBLEADER
-	if (lowertext(usr.key) in orkleader)
+	if (config.OREnabled && lowertext(usr.key) in orkleader)
 		RTDoptions += "ORKLEADER"								//ORKLEADER
-	if (lowertext(usr.key) in pmleader)
+	if (config.PMEnabled && lowertext(usr.key) in pmleader)
 		RTDoptions += "PMLEADER"								//PMLEADER
-	if (lowertext(usr.key) in ksonsleader)
+	if (config.KSEnabled && lowertext(usr.key) in ksonsleader)
 		RTDoptions += "KSONSLEADER"								//KSONSLEADER
-	if (lowertext(usr.key) in ohleader)
+	if (config.OHEnabled && lowertext(usr.key) in ohleader)
 		RTDoptions += "OHLEADER"
-	if (lowertext(usr.key) in ohsleader)
+	if (config.OHEnabled && lowertext(usr.key) in ohsleader)
 		RTDoptions += "OHSTORMLEADER"
 	RTDoptions += "Cancel" 										//Gonna sneak this into the list so it'll pop up as an option in choosefromlist()
 	choosefromlist(RTDoptions)
@@ -494,6 +518,7 @@ Update: What have we created? something awful -wel ard
 	if(prob(10))
 		sound = 'sound/voice/rtdmenu5.ogg'
 	usr << sound(sound)
+	usr << "Please select an available faction from the list. If none appear, this is due to the admins choosing to disable all RTDs available to you."
 	var/editchoice																		//start the var
 	editchoice = input("Select an available faction:","Faction Selection") as null|anything in RTDoptions	//surprise! var is input
 	switch(editchoice)
@@ -581,7 +606,7 @@ Update: What have we created? something awful -wel ard
 
 		if("THOUSANDSONS")
 			message_admins("[usr.key] executed RTD faction: ThousandSons.", 0)
-			usr << "\blue You are a Thousand Sons! M'kachen is trapped on ArchAngel IV. Find him. Free him."
+			usr << "\blue You are a brother of the Thousand Sons! Aboard this station is a powerful Psyker, capture him, he may yet be corrupted to our ways."
 			usr.loc = get_turf(locate("landmark*ksonsteam"))
 			var/mob/living/carbon/human/whitelisted/ksons/new_character = new(usr.loc)
 			new_character.key = usr.key

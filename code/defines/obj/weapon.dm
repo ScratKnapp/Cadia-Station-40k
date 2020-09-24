@@ -271,10 +271,10 @@
 	m_amt = 3750
 
 /obj/item/weapon/staff
-	name = "wizards staff"
-	desc = "Apparently a staff used by the wizard."
+	name = "Psyker staff"
+	desc = "Apparently a staff used by a psyker."
 	icon = 'icons/obj/wizard.dmi'
-	icon_state = "staff"
+	icon_state = "IG-staff"
 	force = 3.0
 	throwforce = 5.0
 	throw_speed = 2

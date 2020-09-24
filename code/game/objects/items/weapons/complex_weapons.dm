@@ -201,7 +201,7 @@ But ideally this will create an actual concept of melee dueling.
 	desc = "Dis choppa da best choppa!"
 	icon_state = "chainchoppa"
 	item_state = "choppa"
-	force = 55
+	force = 50
 	piercingpower = 30
 
 
@@ -239,7 +239,7 @@ But ideally this will create an actual concept of melee dueling.
 	hitsound = 'sound/weapons/chainsword.ogg'
 	flags = CONDUCT
 	slot_flags = SLOT_BELT
-	force = 40
+	force = 50
 	throwforce = 10
 	w_class = 3
 	attack_verb = list("mauled" , "mutilated" , "lacerated" , "ripped" , "torn")
@@ -345,7 +345,7 @@ Eldar PSword
 	switchsound = 'sound/effects/eldar2.ogg'
 	slot_flags = SLOT_BELT
 	flags = CONDUCT | NOSHIELD
-	force = 30.0
+	force = 20
 	throwforce = 7
 	w_class = 3
 	origin_tech = "combat=8"
@@ -736,3 +736,18 @@ Make a warp conduit blade that is really effective against daemons and has null 
 		shock(M)
 	if(!istype(M, /mob/living/carbon/human/whitelisted))
 		M.Stun(1)
+
+/obj/item/weapon/khopesh
+	name = "Force Khopesh"
+	desc = "The legendary blade of the Thousand Sons"
+	icon_state = "khopesh"
+	item_state = "khopesh"
+	flags = CONDUCT
+	slot_flags = SLOT_BELT
+	force = 30
+	piercingpower = 30
+	throwforce = 20
+	throw_range = 4
+	w_class = 4
+	attack_speedmod = 4
+	origin_tech = "combat=5;powerstorage=5"

@@ -22,9 +22,8 @@ Salamanders
 	equip_to_slot_or_del(new /obj/item/weapon/chainsword, slot_belt)
 	equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_r_store)
 	equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_l_store)
-	equip_to_slot_or_del(new /obj/item/weapon/tank/oxygen/smback, slot_back)
+	equip_to_slot_or_del(new /obj/item/weapon/storage/smbackpack, slot_back)
 	equip_to_slot_or_del(new /obj/item/weapon/twohanded/mjollnir/samander, slot_r_hand)
-	equip_to_slot_or_del(new /obj/item/weapon/book/manual/astartes, slot_l_hand)
 	equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bolter, slot_s_store)
 	regenerate_icons()
 
@@ -67,10 +66,10 @@ Salamanders
 	real_name = "Brother [rndname]"
 
 	spawn(20)
-		var/weaponchoice = input("Loadout.","Select a Loadout") as null|anything in list("Apothecary", "Techmarine", "Tactical")
+		var/weaponchoice = input("Loadout.","Select a Loadout") as null|anything in list("Apothecary", "Techmarine", "Tactical", "Librarian")
 		switch(weaponchoice)
 			if("Apothecary")
-				equip_to_slot_or_del(new /obj/item/weapon/tank/oxygen/smback, slot_back)
+				equip_to_slot_or_del(new /obj/item/weapon/storage/smbackpack, slot_back)
 				equip_to_slot_or_del(new /obj/item/clothing/mask/breath/marine, slot_wear_mask)
 				equip_to_slot_or_del(new /obj/item/clothing/under/surgerycybernetic, slot_w_uniform)
 				equip_to_slot_or_del(new /obj/item/clothing/suit/armor/spowerarmor/apoth, slot_wear_suit)
@@ -81,7 +80,6 @@ Salamanders
 				equip_to_slot_or_del(new /obj/item/weapon/chainsword, slot_belt)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_r_store)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_l_store)
-				equip_to_slot_or_del(new /obj/item/weapon/book/manual/astartes, slot_l_hand)
 				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bolter, slot_s_store)
 				var/obj/item/weapon/card/id/W = new
 				W.icon_state = "smcard"
@@ -107,7 +105,6 @@ Salamanders
 				equip_to_slot_or_del(new /obj/item/weapon/chainsword, slot_belt)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_r_store)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_l_store)
-				equip_to_slot_or_del(new /obj/item/weapon/book/manual/astartes, slot_l_hand)
 				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bolter, slot_s_store)
 				new /obj/item/weapon/snowshovel/ig970 (loc)
 				maxHealth = 175
@@ -124,7 +121,7 @@ Salamanders
 				rename_self("[name]")
 			if("Tactical")
 				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bpistol, slot_r_hand)
-				equip_to_slot_or_del(new /obj/item/weapon/tank/oxygen/smback, slot_back)
+				equip_to_slot_or_del(new /obj/item/weapon/storage/smbackpack, slot_back)
 				equip_to_slot_or_del(new /obj/item/clothing/mask/breath/marine, slot_wear_mask)
 				equip_to_slot_or_del(new /obj/item/clothing/under/color/black, slot_w_uniform)
 				equip_to_slot_or_del(new /obj/item/clothing/suit/armor/spowerarmor, slot_wear_suit)
@@ -135,13 +132,43 @@ Salamanders
 				equip_to_slot_or_del(new /obj/item/weapon/chainsword, slot_belt)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_r_store)
 				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_l_store)
-				equip_to_slot_or_del(new /obj/item/weapon/book/manual/astartes, slot_l_hand)
 				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bolter, slot_s_store)
 				var/obj/item/weapon/card/id/W = new
 				W.icon_state = "smcard"
 				W.access = get_all_accesses()
 				W.access += get_centcom_access("UltraMarine")
 				W.assignment = "Salamander Tactical Marine"
+				W.registered_name = real_name
+				W.update_label()
+				equip_to_slot_or_del(W, slot_wear_id)
+				sleep(10)
+				regenerate_icons()
+				rename_self("[name]")
+			if("Librarian")
+				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bpistol, slot_r_hand)
+				equip_to_slot_or_del(new /obj/item/weapon/storage/smbackpack, slot_back)
+				equip_to_slot_or_del(new /obj/item/clothing/mask/breath/marine, slot_wear_mask)
+				equip_to_slot_or_del(new /obj/item/clothing/under/color/black, slot_w_uniform)
+				equip_to_slot_or_del(new /obj/item/clothing/suit/armor/spowerarmor, slot_wear_suit)
+				equip_to_slot_or_del(new /obj/item/clothing/shoes/magboots/sm, slot_shoes)
+				equip_to_slot_or_del(new /obj/item/clothing/gloves/sm, slot_gloves)
+				equip_to_slot_or_del(new /obj/item/clothing/glasses/night, slot_glasses)
+				equip_to_slot_or_del(new /obj/item/clothing/head/helmet/smpowerhelmet, slot_head)
+				equip_to_slot_or_del(new /obj/item/weapon/chainsword, slot_belt)
+				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_r_store)
+				equip_to_slot_or_del(new /obj/item/ammo_box/magazine/boltermag, slot_l_store)
+				equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/automatic/bolter, slot_s_store)
+				maxHealth = 240 //trait: nerd -10 hp
+				maxPsy += 1000
+				verbs += /mob/living/carbon/human/whitelisted/proc/imprison
+				verbs += /mob/living/carbon/human/whitelisted/proc/smite
+				verbs += /mob/living/carbon/human/whitelisted/proc/quickening
+				verbs += /mob/living/carbon/human/whitelisted/proc/telepath
+				var/obj/item/weapon/card/id/W = new
+				W.icon_state = "smcard"
+				W.access = get_all_accesses()
+				W.access += get_centcom_access("UltraMarine")
+				W.assignment = "Salamander Librarian"
 				W.registered_name = real_name
 				W.update_label()
 				equip_to_slot_or_del(W, slot_wear_id)
